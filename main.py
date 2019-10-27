@@ -1,38 +1,7 @@
-# Consumer Side
-# --------------
-
-# App saves data based on their face
-# One account for any location
-# User can 
-
-# Back End
-# --------------
-# First time - User image taken, account created correlated to that face.
-# Any other time - Account is found based on face
-
-# Account creation
-# --------------
-# Image uploaded to S3 bucket
-# Search faces by finding face ID (IndexFaces)
-# If match found, find corresponding data in db
-# Get transcation info, update database based on transcation amount / specials
-
-
-# MVP
-# --------------
-# Image taken > uploaded to S3
-# Face ID found
-# Look up face ID in database
-# Fetch transaction information
-# Database updated based on transaction
-
-# Rewards as database items (stock & price)
-# Users can look at and redeem rewards, updates database
-
-
 import boto3
 from STVNetworkClass import CustomerDataTable as db
 from datetime import datetime
+import math
 
 client = boto3.client('rekognition') # Connect to rekognition client
 s3 = boto3.client('s3') # Connect to s3 client
@@ -82,6 +51,7 @@ def indexFace(image, collection):
     index_response = client.index_faces(CollectionId=collection,
                     Image={'S3Object':{'Bucket':bucket, 'Name':image}},
                     MaxFaces=1,
+                    ExternalImageId=image,
                     QualityFilter='NONE')
     id = index_response['FaceRecords'][0]['Face']['FaceId']
     db.addFaceID(id)
@@ -97,6 +67,7 @@ def deleteFace(face_id, collection):
     face_id_list = [face_id]
     client.delete_faces(CollectionId=collection,
                         FaceIds=face_id_list )
+    db.removeFaceID(face_id)
 
 # Searches for a specific face that matches a given image
 def searchForFace(input, collection):
@@ -104,14 +75,39 @@ def searchForFace(input, collection):
         Image={'S3Object':{'Bucket':bucket, 'Name':input}},
         FaceMatchThreshold=80,
         MaxFaces=1)
-    return search_response['FaceMatches'][0]['Face']['FaceId']
+    
+    response_list = [search_response['FaceMatches'][0]['Face']['FaceId'], search_response['FaceMatches'][0]['Face']['ExternalImageId']]
+    print('FaceId: {} ImageId: {}'.format(response_list[0], response_list[1]))
+    return response_list[0] # return faceId
 
+# Returns list of all faceId's in a collection
 def listFaces(collection):
-    faces = []
+    faces = {}
     list_response = client.list_faces(CollectionId=collection)
     for face in list_response['Faces']:
-        faces.append(face['FaceId'])
+        faces.update({face['ExternalImageId'] : face['FaceId']})
     return faces
 
+# Transaction Data
+def create_transaction(face_id, price):
+    db.addPoints(face_id, price_to_points(price))
 
-print(listFaces(collection))
+# Convert dollar amount to price
+def price_to_points(price):
+    return math.floor(price * 10)
+
+# Rewards Data
+def redeem_points(face_id, price):
+    db.removePoints(face_id, price)
+
+
+# MAIN EXECUTION #
+print('Welcome to Hermes, a project created at HackGT6!')
+print('Hermes is a rewards program that uses facial recognition to give you rewards for all your shopping locations')
+print('Hermes was developed by: Ryan Elliott & Sterling Cole with design help from Yash Vagal and Dakota Survance')
+print('-------------------------------')
+
+indexFace("2.jpg", collection)
+print(db.getPoints(searchForFace("3.jpg", collection)))
+db.addPoints(searchForFace("3.jpg", collection), 10000)
+print(db.getPoints(searchForFace("3.jpg", collection)))

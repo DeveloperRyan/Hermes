@@ -74,6 +74,7 @@ class CustomerDataTable:
     def addFaceID(FaceID):
         cursor.execute("INSERT INTO CustomerData (FaceID, Points, Purchases, PointsLifetime)\nVALUES ('"+FaceID+"',0,0,0)")
         cursor.commit()
+    
     @staticmethod
     def removeFaceID(FaceID):
         cursor.execute("DELETE FROM CustomerData WHERE FaceID = '"+FaceID+"'")
