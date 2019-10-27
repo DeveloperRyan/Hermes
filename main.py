@@ -33,8 +33,11 @@ def list_collections(max_results):
                  collection_list.append(collection)
         else:
             done = True
-    return(collection_list)
+    return collection_list
 
+def collection_facecount(collection):
+    facecount_response = client.describe_collection(CollectionId=collection)
+    return facecount_response['FaceCount']
 
 def index_face(image, collection):
     indexResponse = client.index_faces(CollectionId=collection,

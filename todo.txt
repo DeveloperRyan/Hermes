@@ -1,0 +1,30 @@
+# Consumer Side
+# --------------
+
+# App saves data based on their face
+# One account for any location
+# User can 
+
+$ Back End
+$ --------------
+# First time - User image taken, account created correlated to that face.
+# Any other time - Account is found based on face
+
+# Account creation
+# --------------
+# Image uploaded to S3 bucket
+# Search faces by finding face ID (IndexFaces)
+# If match found, find corresponding data in db
+# Get transcation info, update database based on transcation amount / specials
+
+
+# MVP
+# --------------
+# Image taken > uploaded to S31
+# Face ID found
+# Look up face ID in database
+# Fetch transaction information
+# Database updated based on transaction
+
+# Rewards as database items (stock & price)
+# Users can look at and redeem rewards, updates database
