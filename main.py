@@ -1,15 +1,36 @@
 import boto3
 from STVNetworkClass import CustomerDataTable as db
-from datetime import datetime
+import time
 import math
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 client = boto3.client('rekognition') # Connect to rekognition client
 s3 = boto3.client('s3') # Connect to s3 client
+root = Tk()
+root.withdraw()
+
+print('Welcome to Hermes, a project created at HackGT6!')
+print('Hermes is a rewards program that uses facial recognition to give you rewards for all your shopping locations')
+print('Hermes was developed by: Ryan Elliott & Sterling Cole with design help from Yash Vagal and Dakota Survance')
+print('-------------------------------')
 
 # AWS information
 bucket = 'image-rewards'
 collection = 'registered_faces'
-image_input = ''
+db_image = askopenfilename(title='Select an image to add')
+scan_image = askopenfilename(title='Select an image to scan for similarities')
+
+db_image = str(db_image)
+scan_image = str(scan_image)
+
+db_key = int(time.time())
+s3.upload_file(db_image, bucket, "{}.jpg".format(str(db_key)))
+
+scan_key = db_key+1
+s3.upload_file(scan_image, bucket, "{}.jpg".format(str(scan_key)))
+
+print(scan_key)
 
 # Create a collection within bucket to store and search images
 def createCollection(collection):
@@ -101,13 +122,18 @@ def redeem_points(face_id, price):
     db.removePoints(face_id, price)
 
 
-# MAIN EXECUTION #
-print('Welcome to Hermes, a project created at HackGT6!')
-print('Hermes is a rewards program that uses facial recognition to give you rewards for all your shopping locations')
-print('Hermes was developed by: Ryan Elliott & Sterling Cole with design help from Yash Vagal and Dakota Survance')
-print('-------------------------------')
+db_key = "{}.jpg".format(db_key)
+scan_key = "{}.jpg".format(scan_key)
 
-indexFace("2.jpg", collection)
-print(db.getPoints(searchForFace("3.jpg", collection)))
-db.addPoints(searchForFace("3.jpg", collection), 10000)
-print(db.getPoints(searchForFace("3.jpg", collection)))
+
+
+# MAIN EXECUTION #
+indexFace(db_key, collection)
+scanned_id = searchForFace(scan_key, collection)
+print('FaceId Match: {}'.format(scanned_id))
+
+print('User reward points: {}'.format(db.getPoints(scanned_id)))
+print('Adding points to account...')
+db.addPoints(scanned_id, 10000)
+print('Points added successfully!')
+print('User reward points: {}'.format(db.getPoints(scanned_id)))
