@@ -40,7 +40,6 @@ bucket = 'image-rewards'
 collection = 'registered_faces'
 fileInput = ''
 
-
 # Create a collection within bucket to store and search images
 def create_collection(collection):
     client.create_collection(CollectionId=collection)
@@ -85,20 +84,20 @@ def index_face(image, collection):
     return indexResponse['FaceRecords'][0]['Face']['FaceId']
 
 # Remove a list of faces from a collection
-def delete_faces(faceIds, collection): # Pass a vector of faceIDs
+def delete_faces(face_ids, collection): # Pass a vector of faceIDs
     client.delete_faces(CollectionId=collection,
-                        FaceIds=faceIds)
+                        FaceIds=face_ids)
 
 # Remove a single face from a collection
-def delete_face(faceId, collection):
-    face_id_list = [faceId]
+def delete_face(face_id, collection):
+    face_id_list = [face_id]
     client.delete_faces(CollectionId=collection,
                         FaceIds=face_id_list )
 
 # Searches for a specific face that matches a given image
-def search_for_face(image, collection):
+def search_for_face(input, collection):
     searchResponse = client.search_faces_by_image(CollectionId=collection,
-                Image={'S3Object':{'Bucket':bucket, 'Name':fileInput}},
-                FaceMatchThreshold=80,
-                MaxFaces=2)
+        Image={'S3Object':{'Bucket':bucket, 'Name':input}},
+        FaceMatchThreshold=80,
+        MaxFaces=2)
     return searchResponse['FaceMatches'][0]['Face']['FaceId']
