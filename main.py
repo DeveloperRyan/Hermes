@@ -31,6 +31,7 @@
 
 
 import boto3
+from STVNetworkClass import CustomerDataTable as db
 from datetime import datetime
 
 client = boto3.client('rekognition') # Connect to rekognition client
@@ -82,6 +83,8 @@ def indexFace(image, collection):
                     Image={'S3Object':{'Bucket':bucket, 'Name':image}},
                     MaxFaces=1,
                     QualityFilter='NONE')
+    id = index_response['FaceRecords'][0]['Face']['FaceId']
+    db.addFaceID(id)
     return index_response['FaceRecords'][0]['Face']['FaceId']
 
 # Remove a list of faces from a collection

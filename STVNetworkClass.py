@@ -71,12 +71,7 @@ class CustomerDataTable:
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #other
     @staticmethod
-    def addFaceID(points):
-        cursor.execute("INSERT INTO CustomerData (FaceID, Points, Purchases, PointsLifetime)\nVALUES ("+str(int(CustomerDataTable.getMax())+1)+", "+str(points)+", 0,0)")
+    def addFaceID(FaceID):
+        cursor.execute("INSERT INTO CustomerData (FaceID, Points, Purchases, PointsLifetime)\nVALUES ("+str(FaceID)+",0,0,0)")
         cursor.commit()
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-CustomerDataTable.addPoints(4,50)
-CustomerDataTable.removePoints(4,50)
-print(CustomerDataTable.getAll())
