@@ -17,7 +17,7 @@ class CustomerDataTable:
 
     @staticmethod    
     def getPointsLifetime(FaceID):
-        cursor.execute("SELECT PointsLifetime FROM CustomerData WHERE FaceID = '"FaceID+"'")
+        cursor.execute("SELECT PointsLifetime FROM CustomerData WHERE FaceID = '"+FaceID+"'")
         row = cursor.fetchone()
         return str(row[0]) 
     
@@ -76,6 +76,6 @@ class CustomerDataTable:
         cursor.commit()
     @staticmethod
     def removeFaceID(FaceID):
-        cursor.execute("DELETE FROM CustomerData WHERE FaceID = '" + FaceID+"'")
+        cursor.execute("DELETE FROM CustomerData WHERE FaceID = '"+FaceID+"'")
         cursor.commit()
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
