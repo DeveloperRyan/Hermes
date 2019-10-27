@@ -99,5 +99,5 @@ def search_for_face(input, collection):
     searchResponse = client.search_faces_by_image(CollectionId=collection,
         Image={'S3Object':{'Bucket':bucket, 'Name':input}},
         FaceMatchThreshold=80,
-        MaxFaces=2)
+        MaxFaces=1)
     return searchResponse['FaceMatches'][0]['Face']['FaceId']
